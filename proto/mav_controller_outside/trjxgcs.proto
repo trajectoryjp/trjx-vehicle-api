@@ -1,0 +1,265 @@
+syntax = "proto3";
+
+package trjxmavlink;
+
+//option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
+option go_package = "proto_go/trjxmavlink" ;
+//import "trjxcommon.proto";
+//import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
+import "proto/mav_controller_outside/trjxcommon.proto" ;
+//import "mission.proto"; 
+//import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/mission.proto" ;
+import "proto/mav_controller_mission/mission.proto" ;
+
+// 当面TLS対象外
+// 最初にConnect()でトークンを得る。トークンに期限なし、Connect()により更新される。
+// ただしトークンは揮発性であり、サーバーの更新などにより初期化されることがある。トークンの認証がNGになった場合はConnectから再試行すること。
+// 各APIにアクセスするには、Connect()で得たトークンを以下に設定する
+//  - aircraft
+//  - token
+// 具体的な設定方法はサンプル grpc.goのfunc Telemetry(aircraft string, token string, ch chan struct{})を参照
+
+// GCS・汎用機(DJIなどMavlink以外）向け
+service TrjxGcsService {
+    // バージョン情報取得。認証不要。
+    rpc GetSeriviceAttribute(Empty) returns (SeriviceAttribute){} 
+
+    // GCSからTRJXへの接続要求。機体ごとに行う。
+    rpc Connect(ConnectRequest) returns (GCToken){} 
+
+    // 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
+    rpc Communicate(stream TrjxVehicleMessage) returns(stream TrjxVehicleMessage){} 
+
+    // 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
+    rpc Request(TrjxVehicleRequest) returns(stream TrjxVehicleResponse){} 
+
+    // 応答はkeepalive。Connect()で得たaircraft_idとtokenでアクセスする。
+    // 1機体につき1ストリーム（機体ごとに本APIを呼ぶこと）
+    rpc Telemetry(stream TrjxVehicleTelemetry) returns(stream Empty){} 
+
+    // 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
+    rpc ReceiveCommand(stream TrjxVehicleReceiveCommandHandling) returns(stream TrjxVehicleCommand){}  // GCS/機体の応答を得るためには双方向stream
+}
+
+message ConnectRequest {
+    string AircraftID = 1 ; // 自組織の機体に限る
+    oneof Identification {
+        string UserID = 2 ; // TRJXユーザID
+        string OrganizationID = 3 ; // TRJX組織ID。未実装
+    }
+    string Password = 8 ;
+}
+
+message GCToken{
+    enum Code {
+        Complete = 0 ; // ログイン成功
+        Invalid = 3 ; // パスワードが無効
+        UnavailableUAV = 4 ; // 許容されない機体（他組織など） 
+        InternalError = 10 ;
+    }
+    Code Result = 1 ;
+    string Token = 2 ;
+}
+
+message TrjxVehicleMessage {
+    //string VehicleID = 1 ; // TRJX UAVIDに一致する
+    oneof MessageType {
+        Empty Heartbeat = 1 ;
+    }
+}
+
+message TrjxVehicleRequest { 
+    // ルートアタッチ
+}
+
+message TrjxVehicleResponse { 
+}
+
+message TrjxVehicleTelemetry { 
+    //string VehicleID = 1 ; // 1ストリームに複数VehicleID利用可能
+    oneof TelemetryType  {
+        PositionDef Position = 2 ;
+        AttitudeDef Attitude = 3 ;
+        SysStatusDef SysStatus = 4 ; // TRJXバッテリーなど状態UI表示
+
+        BatteryStatusDef Battery = 10 ; // バッテリー詳細情報（オプション）
+
+        KeyValueTelemetryDef KeyValueTelemetry=1 ; // キーバリュータイプ（暫定API）
+        HeartbeatDef heartbeat = 11 ;
+    }
+}
+
+message PositionDef {
+    double Latitude = 1 ;
+    double Longitude =2 ;
+    float Altitude = 3 ; // m
+    AltitudeAttrDef AltitudeAttr = 4 ;
+    float Vx = 5 ; // m/s  (Latitude, positive north)
+    float Vy = 6 ; // m/s (Longitude, positive east)
+    float Vz = 7 ; // m/s  (Altitude, positive down)
+    float Heading = 8 ; // Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: MaxFloat32
+
+    enum AltitudeAttrDef {
+        Unknown = 0 ; 
+        Ellipsoide = 1 ; // 未対応
+        MSL = 2 ;  // 当面MSLのみ
+        AGL = 3 ; // 未対応
+    }
+}
+
+message AttitudeDef {
+    float Roll  = 1 ; // Roll angle (-pi..+pi)
+    float Pitch = 2  ; // Pitch angle (-pi..+pi)
+    float Yaw = 3 ; // Yaw angle (-pi..+pi) Hedingに同じ
+    // Roll angular speed
+    float Rollspeed = 4 ;
+    // Pitch angular speed
+    float Pitchspeed = 5 ;
+    // Yaw angular speed
+    float Yawspeed =6 ;
+}
+
+message SysStatusDef {
+    int32 CpuLoad = 1 ; // % (マイナス値で無効)
+    float VoltageBattery = 2 ; // V (マイナス値で無効)
+    float CurrentBattery = 3  ; // A (マイナス値で無効)
+    int32 BatteryRemaining = 4 ; // %  (マイナス値で無効)
+    // string ErrorInfo = 5 ;
+}
+
+/*
+message BatterysDef { // BATTERY_STATUS ( #147 )
+    map<int32,BatteryStatusDef> Batterys = 1 ;
+}
+*/
+
+message BatteryStatusDef{
+	// Battery ID
+	int32 ID =1 ;
+
+	// Temperature of the battery. INT16_MAX for unknown temperature.
+	float Temperature = 4 ; // C degree
+	// Battery voltage of cells 1 to 10 (see voltages_ext for cells 11-14). Cells in this field above the valid cell count for this battery should have the UINT16_MAX value. If individual cell voltages are unknown or not measured for this battery, then the overall battery voltage should be filled in cell 0, with all others set to UINT16_MAX. If the voltage of the battery is greater than (UINT16_MAX - 1), then cell 0 should be set to (UINT16_MAX - 1), and cell 1 to the remaining voltage. This can be extended to multiple cells if the total voltage is greater than 2 * (UINT16_MAX - 1).
+	repeated float Voltages = 5 ; // Volt
+	// Battery current, -1: autopilot does not measure the current
+	float CurrentBattery = 6 ; // A
+	// Consumed charge, -1: autopilot does not provide consumption estimate
+	float CurrentConsumed = 7 ; // Ah
+	// Consumed energy, -1: autopilot does not provide energy consumption estimate
+	float EnergyConsumed = 8 ; // J
+	// Remaining battery energy. Values: [0-100], -1: autopilot does not estimate the remaining battery.
+	int32  BatteryRemaining = 9 ; // %
+	// Remaining battery time, 0: autopilot does not provide remaining battery time estimate
+	int32 TimeRemaining = 10 ; // sec
+
+    // update time
+    int64 Time = 20 ; // UNIX TIME
+}
+
+message HeartbeatDef {
+  FlightStateType FlightState = 1;
+  // DisplayModeDef DisplayMode = 2;
+}
+
+enum FlightStateType {
+  Unknown  = 0;
+  Stopped  = 1; // disarming
+  OnGround = 2; // arming
+  InAir    = 3; // arming
+}
+
+message TrjxVehicleReceiveCommandHandling { 
+    string VehicleID = 1 ; 
+    ResponseDef Response = 2 ; // Commnadに対するレスポンス。
+
+    message ResponseDef{
+        int32 Seq = 1 ; // CommandのSeq
+        ResultDef Result = 2 ;
+        string Info = 3 ;
+       
+        enum ResultDef{
+            Complete = 0 ;
+            Continue = 1 ; // コマンド実行中
+            Error = 20 ;
+        }
+    }
+}
+
+message TrjxVehicleCommand { 
+    int32 Seq = 1 ;
+    oneof Command {
+        Collision NotifyCollision = 2 ;
+        Avoidance NotifyAvoidance = 3 ;
+        trjxmission.Mission SetMission= 4 ; 
+        trjxmission.Mission SetMissionInFlight= 5 ; 
+        TVCExecMission ExecMission = 6 ;
+        TVCPause Pause = 7 ;
+        TVCLand Land = 9 ; // Land/RTL中はResult=Continue,着陸完了でesult=Complete
+        TVCArm Arm = 10 ;
+        TVCTakeoff Takeoff = 11 ;
+        TVCGoto Goto = 12 ;
+   }
+}
+
+message Collision {
+    int32 ID = 1 ;
+    float DistanceX = 2 ;
+    float DistanceY = 3 ;
+    float DistanceZ = 4 ;
+    float SpeedX = 5 ;
+    float SpeedY = 6 ;
+    float SpeedZ = 7 ;
+}
+
+message Avoidance { // Reroute不可の機体に対して通知
+    // 検討中
+    // 空間ID利用？
+}
+
+// キーバリュータイプテレメトリー
+message KeyValueTelemetryDef {
+    oneof TelemetryElement {
+        double Latitude = 1 ; // degree <oneof TelemetryElement>
+        double Longitude =2 ; // degree <oneof TelemetryElement>
+        AltitudeElement Altitude = 3 ; //  <oneof TelemetryElement>
+        float Vx = 4 ; // m/s  (Latitude, positive north)  <oneof TelemetryElement>
+        float Vy = 5 ; // m/s (Longitude, positive east)  <oneof TelemetryElement>
+        float Vz = 6 ; // m/s  (Altitude, positive down)  <oneof TelemetryElement>
+        float Heading = 7 ; // Vehicle heading (yaw angle), 0.0..359.99 degrees. If unknown, set to: MaxFloat32  <oneof TelemetryElement>
+        float Roll  = 8 ; // Roll angle (-pi..+pi)  <oneof TelemetryElement>
+        float Pitch = 9  ; // Pitch angle (-pi..+pi)  <oneof TelemetryElement>
+        int32  BatteryRemaining = 10 ; // %  <oneof TelemetryElement>
+    }
+
+    message AltitudeElement {
+        float Altitude = 1 ; // m
+        PositionDef.AltitudeAttrDef AltitudeAttr = 2 ;
+    }
+}
+
+message TVCExecMission{
+
+}
+
+message TVCPause{
+    bool Pause = 1 ; // tureでPause、falseでResume
+}
+
+message TVCLand{
+    bool RTL = 1 ; // trueでRTL/RTH
+}
+
+message TVCArm{
+    bool Arm = 1 ; // true=arm, false=disarm
+}
+
+message TVCTakeoff{
+
+}
+
+message TVCGoto{
+    double Latitude = 1 ;
+    double Longitude = 2 ;
+    trjxmission.Altitude Altitude = 3 ;
+}
+

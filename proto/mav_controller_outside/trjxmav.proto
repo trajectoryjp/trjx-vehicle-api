@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package trjxmavlink;
+
+//option go_package = "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles_go/trjxmavlink" ;
+//option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
+option go_package = "proto_go/trjxmavlink" ;
+
+//import "trjxcommon.proto";
+//import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
+import "proto/mav_controller_outside/trjxcommon.proto" ;
+
+// 当面TLS対象外
+// 最初にLogin()でトークンを得る。機体IDとパスワードをhttpヘッダに設定する
+// トークンに期限なし、Connect()により更新される。
+// トークンは揮発性であり、サーバーの更新などにより初期化されることがある。トークンの認証がNGになった場合はConnectから再試行すること。
+//  - aircraft
+//  - password
+// CommunicateOnMavlink()にアクセスするには、Login()で得たトークンを以下に設定する
+//  - aircraft
+//  - token
+
+service TrjxMavlinkService {
+    // バージョン情報取得。認証不要。
+    rpc GetSeriviceAttribute(Empty) returns (SeriviceAttribute){}
+
+    // aircraftとpasswordで認証
+    rpc Login(Empty) returns (Token){} 
+
+    // AutopilotModel通知
+    rpc SetAutopilotModel(SetAutopilotModelRequest) returns (Result){}
+    
+    // 機体とのテレメトリーおよびコマンド送受。機体ごとのストリーム。
+    rpc CommunicateOnMavlink(stream TrjxMavlink) returns(stream TrjxMavlink){}
+}
+
+message Token{
+    enum Code {
+        Complete = 0 ; // ログイン成功
+        Accepted = 1 ; // ユーザによって承認。パスワードリセット
+        Deny = 2 ; // ユーザによって拒否。（初期パスワード）
+        Invalid = 3 ; // パスワードが無効
+        InternalError = 10 ;
+    }
+    Code Result = 1 ;
+    string Password = 2 ;
+    string Token = 3;
+}
+
+message SetAutopilotModelRequest {
+    AutopilotModelDef Model = 1 ;
+}
+
+message TrjxMavlink {
+    bytes MavlinkMessage = 5 ; // mavlink binary
+}

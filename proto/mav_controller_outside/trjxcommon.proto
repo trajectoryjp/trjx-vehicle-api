@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package trjxmavlink;
+
+//option go_package = "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles_go/trjxmavlink" ;
+//option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
+option go_package = "proto_go/trjxmavlink" ;
+
+message SystemVersion {
+    int32 major = 1;
+    int32 minor = 2;
+    string build =3;
+}
+
+message SeriviceAttribute {
+    SystemVersion Version = 1;
+}
+
+message Empty {}
+
+message Result {
+    CodeDef Code = 1 ;
+    string Detail = 2 ;
+
+    enum CodeDef {
+        Complete = 0 ;
+        InternalError = 1 ;
+        NoExistAircraft = 2 ;
+    }
+}
+
+message AutopilotModelDef { // MS model.json
+    oneof Model {
+        string Name = 1 ;// MS model.jsonモデル名
+        string ModelSet = 2 ; // json
+    }
+}

@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package trjxmission;
+
+//option go_package = "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles_go/trjxmission";
+//option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmission" ;
+option go_package = "proto_go/trjxmission" ;
+
+// MissionItemのリスト
+message Mission {
+    repeated MissionItem itemsArray = 1; // ミッションのリスト 
+}
+
+// MissionItem（ミッションの構成要素）
+message MissionItem {
+    string tag = 1; // tag名。MissionCurrentの通知パラメータ。
+
+    // ミッションの種類毎のミッション設定情報
+    oneof ItemParameter {
+        ItemParameter_Takeoff takeoff = 11; // 離陸
+        ItemParameter_Waypoint waypoint = 12; // Waypoint（通過点）
+        ItemParameter_Land land = 13; // 着陸
+    }
+}
+
+message Altitude {
+    AltitudeAttr attr = 1;
+    float altitude = 2;
+
+    // 高度属性
+    enum AltitudeAttr {
+        ELLIPSOID = 0 ;// 楕円球体高。MC未実装。
+        RELATIVE = 1 ; // 離陸地点を基準とする相対高度。
+        AGL = 2 ;// 地表面高度。MC未実装。
+        MSL = 3 ;// 海抜高度（標高）
+    }
+}
+
+
+// 離陸を実行する。
+message ItemParameter_Takeoff {
+    // 離陸後に到達する高度
+    Altitude altitude = 1; 
+}
+
+// 指定の座標のWaypointへ向かう
+message ItemParameter_Waypoint {
+    // 高度
+    Altitude altitude = 1; 
+    // 緯度
+    double latitude = 2;
+    // 経度
+    double longitude = 3;
+
+    // ROI
+    ROI roi = 4 ;
+
+    // Camera
+    CameraControl cameraControl = 5 ;
+    oneof CameraOption {
+        float shootIntervalDistance = 6 ; // 写真の撮影間隔（m）。0以下で停止。
+        int32 shootIntervalTime = 7 ; // 写真の撮影間隔（秒）。0以下で停止。
+    }  
+
+    // trueで無限pause（再開メッセージを受けるまで）
+    bool    pause = 10; 
+    // pauseがfalseの場合のみ有効。秒
+    optional float holdtime = 11;
+    // ヘディング 機首方向（北0度、東90度）
+    optional float heading = 12 ; 
+    // スピード（本WP通過後の速度）
+    optional float speed = 13 ;  // m/s
+}
+
+// 着陸を実行する
+// 最終ポイントで本Itemを指定しない場合はDefaultの動作になる
+// RTLを指定した場合はRTLが変わるごとに自動でルートが変更される（未実装）
+message ItemParameter_Land {
+    LandMode mode = 1;
+
+    // 着陸種別
+    enum LandMode {
+        Current = 0 ; // 現在地点で着陸する。
+        RTL = 1; // RTLに指定された位置（離陸地点）へ着陸する。
+    };
+}
+
+// ROI座標
+message ROI {
+    // ROIの高度
+    Altitude altitude = 1;
+    // ROIの緯度
+    double latitude = 2;
+    // ROIの経度
+    double longitude = 3;
+}
+
+// カメラ操作 // TR_DEV-157
+message CameraControl {
+    optional float pitch = 1 ; // ジンバル角度。水平0度、真上-90度、真下90度
+    optional float yaw = 2 ;  // 当面対象外
+    optional PictureControl picture = 3 ;
+    optional MovieControl movie = 4 ; 
+    optional float zoom = 5 ; // 拡大率
+    optional EnumImageMode imageMode = 6 ;// 当面対象外
+    optional EnumRayMode rayMode = 7 ;// 当面対象外
+    
+    enum PictureControl {  // 静止画撮影
+        PICTURE_SHUTTER = 0 ; 
+    }
+
+    enum MovieControl {  // 動画録画開始停止
+        MOVIE_START = 0 ; 
+        MOVIE_STOP = 1 ;
+    }
+
+    enum EnumImageMode { //撮影モード
+        MOVIE_MODE = 0 ;
+        PICTURE_MODE = 1 ;
+    }
+
+    enum EnumRayMode {  // 画像モード
+        VISIBLE = 0 ; // 可視光映像
+        INFRARED = 1 ; // 赤外線映像
+    }
+}
+
