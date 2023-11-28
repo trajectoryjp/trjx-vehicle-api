@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	trjxmavlink "proto_go/trjxmavlink"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrjxGcsServiceClient interface {
 	// バージョン情報取得。認証不要。
-	GetSeriviceAttribute(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SeriviceAttribute, error)
+	GetSeriviceAttribute(ctx context.Context, in *trjxmavlink.Empty, opts ...grpc.CallOption) (*trjxmavlink.SeriviceAttribute, error)
 	// GCSからTRJXへの接続要求。機体ごとに行う。
 	Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*GCToken, error)
 	// 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
@@ -45,8 +46,8 @@ func NewTrjxGcsServiceClient(cc grpc.ClientConnInterface) TrjxGcsServiceClient {
 	return &trjxGcsServiceClient{cc}
 }
 
-func (c *trjxGcsServiceClient) GetSeriviceAttribute(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SeriviceAttribute, error) {
-	out := new(SeriviceAttribute)
+func (c *trjxGcsServiceClient) GetSeriviceAttribute(ctx context.Context, in *trjxmavlink.Empty, opts ...grpc.CallOption) (*trjxmavlink.SeriviceAttribute, error) {
+	out := new(trjxmavlink.SeriviceAttribute)
 	err := c.cc.Invoke(ctx, "/trjxmavlink.TrjxGcsService/GetSeriviceAttribute", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -137,7 +138,7 @@ func (c *trjxGcsServiceClient) Telemetry(ctx context.Context, opts ...grpc.CallO
 
 type TrjxGcsService_TelemetryClient interface {
 	Send(*TrjxVehicleTelemetry) error
-	Recv() (*Empty, error)
+	Recv() (*trjxmavlink.Empty, error)
 	grpc.ClientStream
 }
 
@@ -149,8 +150,8 @@ func (x *trjxGcsServiceTelemetryClient) Send(m *TrjxVehicleTelemetry) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *trjxGcsServiceTelemetryClient) Recv() (*Empty, error) {
-	m := new(Empty)
+func (x *trjxGcsServiceTelemetryClient) Recv() (*trjxmavlink.Empty, error) {
+	m := new(trjxmavlink.Empty)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -193,7 +194,7 @@ func (x *trjxGcsServiceReceiveCommandClient) Recv() (*TrjxVehicleCommand, error)
 // for forward compatibility
 type TrjxGcsServiceServer interface {
 	// バージョン情報取得。認証不要。
-	GetSeriviceAttribute(context.Context, *Empty) (*SeriviceAttribute, error)
+	GetSeriviceAttribute(context.Context, *trjxmavlink.Empty) (*trjxmavlink.SeriviceAttribute, error)
 	// GCSからTRJXへの接続要求。機体ごとに行う。
 	Connect(context.Context, *ConnectRequest) (*GCToken, error)
 	// 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
@@ -212,7 +213,7 @@ type TrjxGcsServiceServer interface {
 type UnimplementedTrjxGcsServiceServer struct {
 }
 
-func (UnimplementedTrjxGcsServiceServer) GetSeriviceAttribute(context.Context, *Empty) (*SeriviceAttribute, error) {
+func (UnimplementedTrjxGcsServiceServer) GetSeriviceAttribute(context.Context, *trjxmavlink.Empty) (*trjxmavlink.SeriviceAttribute, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSeriviceAttribute not implemented")
 }
 func (UnimplementedTrjxGcsServiceServer) Connect(context.Context, *ConnectRequest) (*GCToken, error) {
@@ -244,7 +245,7 @@ func RegisterTrjxGcsServiceServer(s grpc.ServiceRegistrar, srv TrjxGcsServiceSer
 }
 
 func _TrjxGcsService_GetSeriviceAttribute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(trjxmavlink.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -256,7 +257,7 @@ func _TrjxGcsService_GetSeriviceAttribute_Handler(srv interface{}, ctx context.C
 		FullMethod: "/trjxmavlink.TrjxGcsService/GetSeriviceAttribute",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrjxGcsServiceServer).GetSeriviceAttribute(ctx, req.(*Empty))
+		return srv.(TrjxGcsServiceServer).GetSeriviceAttribute(ctx, req.(*trjxmavlink.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -331,7 +332,7 @@ func _TrjxGcsService_Telemetry_Handler(srv interface{}, stream grpc.ServerStream
 }
 
 type TrjxGcsService_TelemetryServer interface {
-	Send(*Empty) error
+	Send(*trjxmavlink.Empty) error
 	Recv() (*TrjxVehicleTelemetry, error)
 	grpc.ServerStream
 }
@@ -340,7 +341,7 @@ type trjxGcsServiceTelemetryServer struct {
 	grpc.ServerStream
 }
 
-func (x *trjxGcsServiceTelemetryServer) Send(m *Empty) error {
+func (x *trjxGcsServiceTelemetryServer) Send(m *trjxmavlink.Empty) error {
 	return x.ServerStream.SendMsg(m)
 }
 

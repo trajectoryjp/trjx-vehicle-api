@@ -9,6 +9,7 @@ package trjxmavlink
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	trjxmavlink "proto_go/trjxmavlink"
 	reflect "reflect"
 	sync "sync"
 )
@@ -143,7 +144,7 @@ type SetAutopilotModelRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Model *AutopilotModelDef `protobuf:"bytes,1,opt,name=Model,proto3" json:"Model,omitempty"`
+	Model *trjxmavlink.AutopilotModelDef `protobuf:"bytes,1,opt,name=Model,proto3" json:"Model,omitempty"`
 }
 
 func (x *SetAutopilotModelRequest) Reset() {
@@ -178,7 +179,7 @@ func (*SetAutopilotModelRequest) Descriptor() ([]byte, []int) {
 	return file_proto_mav_controller_outside_trjxmav_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SetAutopilotModelRequest) GetModel() *AutopilotModelDef {
+func (x *SetAutopilotModelRequest) GetModel() *trjxmavlink.AutopilotModelDef {
 	if x != nil {
 		return x.Model
 	}
@@ -281,9 +282,12 @@ var file_proto_mav_controller_outside_trjxmav_proto_rawDesc = []byte{
 	0x18, 0x2e, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c, 0x69, 0x6e, 0x6b, 0x2e, 0x54, 0x72,
 	0x6a, 0x78, 0x4d, 0x61, 0x76, 0x6c, 0x69, 0x6e, 0x6b, 0x1a, 0x18, 0x2e, 0x74, 0x72, 0x6a, 0x78,
 	0x6d, 0x61, 0x76, 0x6c, 0x69, 0x6e, 0x6b, 0x2e, 0x54, 0x72, 0x6a, 0x78, 0x4d, 0x61, 0x76, 0x6c,
-	0x69, 0x6e, 0x6b, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x16, 0x5a, 0x14, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x5f, 0x67, 0x6f, 0x2f, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c, 0x69, 0x6e,
-	0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6e, 0x6b, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x3f, 0x5a, 0x3d, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f,
+	0x72, 0x79, 0x6a, 0x70, 0x2f, 0x74, 0x72, 0x6a, 0x78, 0x2d, 0x76, 0x65, 0x68, 0x69, 0x63, 0x6c,
+	0x65, 0x2d, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x67, 0x6f, 0x2f, 0x74,
+	0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c, 0x69, 0x6e, 0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -301,14 +305,14 @@ func file_proto_mav_controller_outside_trjxmav_proto_rawDescGZIP() []byte {
 var file_proto_mav_controller_outside_trjxmav_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_proto_mav_controller_outside_trjxmav_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_proto_mav_controller_outside_trjxmav_proto_goTypes = []interface{}{
-	(Token_Code)(0),                  // 0: trjxmavlink.Token.Code
-	(*Token)(nil),                    // 1: trjxmavlink.Token
-	(*SetAutopilotModelRequest)(nil), // 2: trjxmavlink.SetAutopilotModelRequest
-	(*TrjxMavlink)(nil),              // 3: trjxmavlink.TrjxMavlink
-	(*AutopilotModelDef)(nil),        // 4: trjxmavlink.AutopilotModelDef
-	(*Empty)(nil),                    // 5: trjxmavlink.Empty
-	(*SeriviceAttribute)(nil),        // 6: trjxmavlink.SeriviceAttribute
-	(*Result)(nil),                   // 7: trjxmavlink.Result
+	(Token_Code)(0),                       // 0: trjxmavlink.Token.Code
+	(*Token)(nil),                         // 1: trjxmavlink.Token
+	(*SetAutopilotModelRequest)(nil),      // 2: trjxmavlink.SetAutopilotModelRequest
+	(*TrjxMavlink)(nil),                   // 3: trjxmavlink.TrjxMavlink
+	(*trjxmavlink.AutopilotModelDef)(nil), // 4: trjxmavlink.AutopilotModelDef
+	(*trjxmavlink.Empty)(nil),             // 5: trjxmavlink.Empty
+	(*trjxmavlink.SeriviceAttribute)(nil), // 6: trjxmavlink.SeriviceAttribute
+	(*trjxmavlink.Result)(nil),            // 7: trjxmavlink.Result
 }
 var file_proto_mav_controller_outside_trjxmav_proto_depIdxs = []int32{
 	0, // 0: trjxmavlink.Token.Result:type_name -> trjxmavlink.Token.Code
@@ -333,7 +337,6 @@ func file_proto_mav_controller_outside_trjxmav_proto_init() {
 	if File_proto_mav_controller_outside_trjxmav_proto != nil {
 		return
 	}
-	file_proto_mav_controller_outside_trjxcommon_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_proto_mav_controller_outside_trjxmav_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Token); i {

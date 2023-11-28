@@ -1,4 +1,4 @@
-module github.com/trajectoryjp/trjx-vehicle-api
+module github.com/trajectoryjp/trjx-vehicle-api/proto_go
 
 go 1.21.3
 

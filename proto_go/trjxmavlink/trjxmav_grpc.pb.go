@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	trjxmavlink "proto_go/trjxmavlink"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,11 +24,11 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TrjxMavlinkServiceClient interface {
 	// バージョン情報取得。認証不要。
-	GetSeriviceAttribute(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SeriviceAttribute, error)
+	GetSeriviceAttribute(ctx context.Context, in *trjxmavlink.Empty, opts ...grpc.CallOption) (*trjxmavlink.SeriviceAttribute, error)
 	// aircraftとpasswordで認証
-	Login(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Token, error)
+	Login(ctx context.Context, in *trjxmavlink.Empty, opts ...grpc.CallOption) (*Token, error)
 	// AutopilotModel通知
-	SetAutopilotModel(ctx context.Context, in *SetAutopilotModelRequest, opts ...grpc.CallOption) (*Result, error)
+	SetAutopilotModel(ctx context.Context, in *SetAutopilotModelRequest, opts ...grpc.CallOption) (*trjxmavlink.Result, error)
 	// 機体とのテレメトリーおよびコマンド送受。機体ごとのストリーム。
 	CommunicateOnMavlink(ctx context.Context, opts ...grpc.CallOption) (TrjxMavlinkService_CommunicateOnMavlinkClient, error)
 }
@@ -40,8 +41,8 @@ func NewTrjxMavlinkServiceClient(cc grpc.ClientConnInterface) TrjxMavlinkService
 	return &trjxMavlinkServiceClient{cc}
 }
 
-func (c *trjxMavlinkServiceClient) GetSeriviceAttribute(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SeriviceAttribute, error) {
-	out := new(SeriviceAttribute)
+func (c *trjxMavlinkServiceClient) GetSeriviceAttribute(ctx context.Context, in *trjxmavlink.Empty, opts ...grpc.CallOption) (*trjxmavlink.SeriviceAttribute, error) {
+	out := new(trjxmavlink.SeriviceAttribute)
 	err := c.cc.Invoke(ctx, "/trjxmavlink.TrjxMavlinkService/GetSeriviceAttribute", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -49,7 +50,7 @@ func (c *trjxMavlinkServiceClient) GetSeriviceAttribute(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *trjxMavlinkServiceClient) Login(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Token, error) {
+func (c *trjxMavlinkServiceClient) Login(ctx context.Context, in *trjxmavlink.Empty, opts ...grpc.CallOption) (*Token, error) {
 	out := new(Token)
 	err := c.cc.Invoke(ctx, "/trjxmavlink.TrjxMavlinkService/Login", in, out, opts...)
 	if err != nil {
@@ -58,8 +59,8 @@ func (c *trjxMavlinkServiceClient) Login(ctx context.Context, in *Empty, opts ..
 	return out, nil
 }
 
-func (c *trjxMavlinkServiceClient) SetAutopilotModel(ctx context.Context, in *SetAutopilotModelRequest, opts ...grpc.CallOption) (*Result, error) {
-	out := new(Result)
+func (c *trjxMavlinkServiceClient) SetAutopilotModel(ctx context.Context, in *SetAutopilotModelRequest, opts ...grpc.CallOption) (*trjxmavlink.Result, error) {
+	out := new(trjxmavlink.Result)
 	err := c.cc.Invoke(ctx, "/trjxmavlink.TrjxMavlinkService/SetAutopilotModel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -103,11 +104,11 @@ func (x *trjxMavlinkServiceCommunicateOnMavlinkClient) Recv() (*TrjxMavlink, err
 // for forward compatibility
 type TrjxMavlinkServiceServer interface {
 	// バージョン情報取得。認証不要。
-	GetSeriviceAttribute(context.Context, *Empty) (*SeriviceAttribute, error)
+	GetSeriviceAttribute(context.Context, *trjxmavlink.Empty) (*trjxmavlink.SeriviceAttribute, error)
 	// aircraftとpasswordで認証
-	Login(context.Context, *Empty) (*Token, error)
+	Login(context.Context, *trjxmavlink.Empty) (*Token, error)
 	// AutopilotModel通知
-	SetAutopilotModel(context.Context, *SetAutopilotModelRequest) (*Result, error)
+	SetAutopilotModel(context.Context, *SetAutopilotModelRequest) (*trjxmavlink.Result, error)
 	// 機体とのテレメトリーおよびコマンド送受。機体ごとのストリーム。
 	CommunicateOnMavlink(TrjxMavlinkService_CommunicateOnMavlinkServer) error
 	mustEmbedUnimplementedTrjxMavlinkServiceServer()
@@ -117,13 +118,13 @@ type TrjxMavlinkServiceServer interface {
 type UnimplementedTrjxMavlinkServiceServer struct {
 }
 
-func (UnimplementedTrjxMavlinkServiceServer) GetSeriviceAttribute(context.Context, *Empty) (*SeriviceAttribute, error) {
+func (UnimplementedTrjxMavlinkServiceServer) GetSeriviceAttribute(context.Context, *trjxmavlink.Empty) (*trjxmavlink.SeriviceAttribute, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSeriviceAttribute not implemented")
 }
-func (UnimplementedTrjxMavlinkServiceServer) Login(context.Context, *Empty) (*Token, error) {
+func (UnimplementedTrjxMavlinkServiceServer) Login(context.Context, *trjxmavlink.Empty) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedTrjxMavlinkServiceServer) SetAutopilotModel(context.Context, *SetAutopilotModelRequest) (*Result, error) {
+func (UnimplementedTrjxMavlinkServiceServer) SetAutopilotModel(context.Context, *SetAutopilotModelRequest) (*trjxmavlink.Result, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetAutopilotModel not implemented")
 }
 func (UnimplementedTrjxMavlinkServiceServer) CommunicateOnMavlink(TrjxMavlinkService_CommunicateOnMavlinkServer) error {
@@ -143,7 +144,7 @@ func RegisterTrjxMavlinkServiceServer(s grpc.ServiceRegistrar, srv TrjxMavlinkSe
 }
 
 func _TrjxMavlinkService_GetSeriviceAttribute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(trjxmavlink.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -155,13 +156,13 @@ func _TrjxMavlinkService_GetSeriviceAttribute_Handler(srv interface{}, ctx conte
 		FullMethod: "/trjxmavlink.TrjxMavlinkService/GetSeriviceAttribute",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrjxMavlinkServiceServer).GetSeriviceAttribute(ctx, req.(*Empty))
+		return srv.(TrjxMavlinkServiceServer).GetSeriviceAttribute(ctx, req.(*trjxmavlink.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _TrjxMavlinkService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(trjxmavlink.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -173,7 +174,7 @@ func _TrjxMavlinkService_Login_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/trjxmavlink.TrjxMavlinkService/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrjxMavlinkServiceServer).Login(ctx, req.(*Empty))
+		return srv.(TrjxMavlinkServiceServer).Login(ctx, req.(*trjxmavlink.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

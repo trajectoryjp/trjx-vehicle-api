@@ -7,9 +7,10 @@
 package trjxmavlink
 
 import (
+	trjxmission "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmission"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	trjxmission "proto_go/trjxmission"
+	trjxmavlink "proto_go/trjxmavlink"
 	reflect "reflect"
 	sync "sync"
 )
@@ -428,7 +429,7 @@ func (m *TrjxVehicleMessage) GetMessageType() isTrjxVehicleMessage_MessageType {
 	return nil
 }
 
-func (x *TrjxVehicleMessage) GetHeartbeat() *Empty {
+func (x *TrjxVehicleMessage) GetHeartbeat() *trjxmavlink.Empty {
 	if x, ok := x.GetMessageType().(*TrjxVehicleMessage_Heartbeat); ok {
 		return x.Heartbeat
 	}
@@ -440,7 +441,7 @@ type isTrjxVehicleMessage_MessageType interface {
 }
 
 type TrjxVehicleMessage_Heartbeat struct {
-	Heartbeat *Empty `protobuf:"bytes,1,opt,name=Heartbeat,proto3,oneof"`
+	Heartbeat *trjxmavlink.Empty `protobuf:"bytes,1,opt,name=Heartbeat,proto3,oneof"`
 }
 
 func (*TrjxVehicleMessage_Heartbeat) isTrjxVehicleMessage_MessageType() {}
@@ -2356,9 +2357,12 @@ var file_proto_mav_controller_outside_trjxgcs_proto_rawDesc = []byte{
 	0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x48, 0x61, 0x6e,
 	0x64, 0x6c, 0x69, 0x6e, 0x67, 0x1a, 0x1f, 0x2e, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c,
 	0x69, 0x6e, 0x6b, 0x2e, 0x54, 0x72, 0x6a, 0x78, 0x56, 0x65, 0x68, 0x69, 0x63, 0x6c, 0x65, 0x43,
-	0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x16, 0x5a, 0x14,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x67, 0x6f, 0x2f, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76,
-	0x6c, 0x69, 0x6e, 0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x3f, 0x5a, 0x3d,
+	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x72, 0x61, 0x6a, 0x65,
+	0x63, 0x74, 0x6f, 0x72, 0x79, 0x6a, 0x70, 0x2f, 0x74, 0x72, 0x6a, 0x78, 0x2d, 0x76, 0x65, 0x68,
+	0x69, 0x63, 0x6c, 0x65, 0x2d, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x67,
+	0x6f, 0x2f, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c, 0x69, 0x6e, 0x6b, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2404,10 +2408,10 @@ var file_proto_mav_controller_outside_trjxgcs_proto_goTypes = []interface{}{
 	(*TVCGoto)(nil),                           // 25: trjxmavlink.TVCGoto
 	(*TrjxVehicleReceiveCommandHandling_ResponseDef)(nil), // 26: trjxmavlink.TrjxVehicleReceiveCommandHandling.ResponseDef
 	(*KeyValueTelemetryDef_AltitudeElement)(nil),          // 27: trjxmavlink.KeyValueTelemetryDef.AltitudeElement
-	(*Empty)(nil),                // 28: trjxmavlink.Empty
-	(*trjxmission.Mission)(nil),  // 29: trjxmission.Mission
-	(*trjxmission.Altitude)(nil), // 30: trjxmission.Altitude
-	(*SeriviceAttribute)(nil),    // 31: trjxmavlink.SeriviceAttribute
+	(*trjxmavlink.Empty)(nil),                             // 28: trjxmavlink.Empty
+	(*trjxmission.Mission)(nil),                           // 29: trjxmission.Mission
+	(*trjxmission.Altitude)(nil),                          // 30: trjxmission.Altitude
+	(*trjxmavlink.SeriviceAttribute)(nil),                 // 31: trjxmavlink.SeriviceAttribute
 }
 var file_proto_mav_controller_outside_trjxgcs_proto_depIdxs = []int32{
 	1,  // 0: trjxmavlink.GCToken.Result:type_name -> trjxmavlink.GCToken.Code
@@ -2459,7 +2463,6 @@ func file_proto_mav_controller_outside_trjxgcs_proto_init() {
 	if File_proto_mav_controller_outside_trjxgcs_proto != nil {
 		return
 	}
-	file_proto_mav_controller_outside_trjxcommon_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_proto_mav_controller_outside_trjxgcs_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ConnectRequest); i {
