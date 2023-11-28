@@ -5,11 +5,11 @@ package trjxmavlink;
 option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
 //option go_package = "proto_go/trjxmavlink" ;
 //import "trjxcommon.proto";
-//import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
-import "proto/mav_controller_outside/trjxcommon.proto" ;
+import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
+//import "proto/mav_controller_outside/trjxcommon.proto" ;
 //import "mission.proto"; 
-//import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/mission.proto" ;
-import "proto/mav_controller_mission/mission.proto" ;
+import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_mission/mission.proto" ;
+//import "proto/mav_controller_mission/mission.proto" ;
 
 // 当面TLS対象外
 // 最初にConnect()でトークンを得る。トークンに期限なし、Connect()により更新される。

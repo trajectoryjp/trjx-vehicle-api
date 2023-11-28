@@ -8,7 +8,7 @@ option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavli
 
 //import "trjxcommon.proto";
 //import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
-import "proto/mav_controller_outside/trjxcommon.proto" ;
+import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
 
 // 当面TLS対象外
 // 最初にLogin()でトークンを得る。機体IDとパスワードをhttpヘッダに設定する

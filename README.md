@@ -3,7 +3,8 @@ gRPC protocol files for connecting UAV to TRJX
 
 compile for GO
 
-$ ls
-LICENSE         README.md       proto           proto_go
 
-$protoc --go_out=. --go-grpc_out=. proto/*/*.proto
+$ ls
+github.com              proto_go                src                     trjx-mavlink-transfer
+
+protoc --go_out=. --go-grpc_out=. github.com/trajectoryjp/trjx-vehicle-api/proto/*/*.proto
