@@ -2,7 +2,8 @@ syntax = "proto3";
 
 package trjxmavlink;
 
-option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
+//option go_package = "gomav/code/proto/pb";
+option go_package = "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles_go/trjxmavlink" ;
 
 message SystemVersion {
     int32 major = 1;
@@ -15,6 +16,19 @@ message SeriviceAttribute {
 }
 
 message Empty {}
+
+message Token{
+    enum Code {
+        Complete = 0 ; // ログイン成功
+        Accepted = 1 ; // ユーザによって承認。パスワード発行。
+        Deny = 2 ; // ユーザによって拒否。
+        Invalid = 3 ; // パスワードが無効
+        InternalError = 10 ;
+    }
+    Code Result = 1 ;
+    string Password = 2 ; // TRJXがペアリング状態である場合にはパスワードが発行される。
+    string Token = 3;
+}
 
 message Result {
     CodeDef Code = 1 ;

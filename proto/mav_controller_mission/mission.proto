@@ -2,7 +2,8 @@ syntax = "proto3";
 
 package trjxmission;
 
-option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmission" ;
+//option go_package = "gomav/code/proto/imp";
+option go_package = "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles_go/trjxmission";
 
 // MissionItemのリスト
 message Mission {
@@ -96,18 +97,18 @@ message ROI {
 // カメラ操作 // TR_DEV-157
 message CameraControl {
     optional float pitch = 1 ; // ジンバル角度。水平0度、真上-90度、真下90度
-    optional float yaw = 2 ;  // 当面対象外
+    optional float yaw = 2 ;  // 水平方向角度(-180°〜180°) 機首方向0°。右方向が+
     optional PictureControl picture = 3 ;
     optional MovieControl movie = 4 ; 
     optional float zoom = 5 ; // 拡大率
     optional EnumImageMode imageMode = 6 ;// 当面対象外
     optional EnumRayMode rayMode = 7 ;// 当面対象外
     
-    enum PictureControl {  // 静止画撮影
+    enum PictureControl {  // 静止画撮影（ミッションはトリガー、テレメトリーは状態）
         PICTURE_SHUTTER = 0 ; 
     }
 
-    enum MovieControl {  // 動画録画開始停止
+    enum MovieControl {  // 動画録画開始停止（ミッションはトリガー、テレメトリーは状態）
         MOVIE_START = 0 ; 
         MOVIE_STOP = 1 ;
     }

@@ -2,13 +2,19 @@ syntax = "proto3";
 
 package trjxmavlink;
 
-option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
-import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
-import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_mission/mission.proto" ;
+// ver5.3.0
 
-// 最初にConnect()でトークンを得る。トークンに期限なし、Connect()により更新される。
+//option go_package = "gomav/code/proto/pb";
+option go_package = "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles_go/trjxmavlink" ;
+
+//import "trjxcommon.proto";
+import "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles/mav_controller_outside/trjxcommon.proto" ;
+//import "mission.proto"; 
+import "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles/mav_controller_mission/mission.proto" ;
+
+// 最初にLoginもしくはConnect()でトークンを得る。トークンに期限なし、Connect()により更新される。
 // ただしトークンは揮発性であり、サーバーの更新などにより初期化されることがある。トークンの認証がNGになった場合はConnectから再試行すること。
-// 各APIにアクセスするには、Connect()で得たトークンを以下に設定する
+// 各APIにアクセスするには、ヘッダに以下を設定する。
 //  - aircraft
 //  - token
 // 具体的な設定方法はサンプル grpc.goのfunc Telemetry(aircraft string, token string, ch chan struct{})を参照
@@ -18,30 +24,40 @@ service TrjxGcsService {
     // バージョン情報取得。認証不要。
     rpc GetSeriviceAttribute(Empty) returns (SeriviceAttribute){} 
 
-    // GCSからTRJXへの接続要求。機体ごとに行う。
+    // aircraftとpasswordで認証してtokenを得る
+    // aircraftとpasswordはヘッダ情報に設定する
+    rpc Login(Empty) returns (Token){} 
+
+    // TRJXユーザアカウントで認証してtokenを得る
     rpc Connect(ConnectRequest) returns (GCToken){} 
 
-    // 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
+    // 未実装。
+    // aircraft_idとtokenでアクセスする。
     rpc Communicate(stream TrjxVehicleMessage) returns(stream TrjxVehicleMessage){} 
 
-    // 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
-    rpc Request(TrjxVehicleRequest) returns(stream TrjxVehicleResponse){} 
+    // 機体からTRJXへのリクエスト
+    // aircraft_idとtokenでアクセスする。
+    rpc SimpleRequest(TrjxVehicleRequest) returns(Result){} 
 
     // 応答はkeepalive。Connect()で得たaircraft_idとtokenでアクセスする。
     // 1機体につき1ストリーム（機体ごとに本APIを呼ぶこと）
+    // aircraft_idとtokenでアクセスする。
     rpc Telemetry(stream TrjxVehicleTelemetry) returns(stream Empty){} 
 
-    // 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
-    rpc ReceiveCommand(stream TrjxVehicleReceiveCommandHandling) returns(stream TrjxVehicleCommand){}  // GCS/機体の応答を得るためには双方向stream
+    // 機体に命令を送る。
+    // UASは本APIを発行しTRJXからのストリームで送られる命令を待ち受ける。
+    // 1機体につき1ストリーム（機体ごとに本APIを呼ぶこと）
+    // aircraft_idとtokenでアクセスする。
+    rpc ReceiveCommand(stream TrjxVehicleReceiveCommandHandling) returns(stream TrjxVehicleCommand){}  
 }
 
 message ConnectRequest {
     string AircraftID = 1 ; // 自組織の機体に限る
     oneof Identification {
-        string UserID = 2 ; // TRJXユーザID
+        string UserID = 2 ; // TRJXアカウントユーザID
         string OrganizationID = 3 ; // TRJX組織ID。未実装
     }
-    string Password = 8 ;
+    string Password = 8 ; // TRJXアカウントパスワード
 }
 
 message GCToken{
@@ -56,36 +72,34 @@ message GCToken{
 }
 
 message TrjxVehicleMessage {
-    //string VehicleID = 1 ; // TRJX UAVIDに一致する
     oneof MessageType {
         Empty Heartbeat = 1 ;
     }
 }
 
 message TrjxVehicleRequest { 
-    // ルートアタッチ
-}
-
-message TrjxVehicleResponse { 
+    oneof Command {
+        string assinged_mission_id = 1 ; //  機体に割り付けたミッションのID
+    }
 }
 
 message TrjxVehicleTelemetry { 
-    //string VehicleID = 1 ; // 1ストリームに複数VehicleID利用可能
     oneof TelemetryType  {
         PositionDef Position = 2 ;
         AttitudeDef Attitude = 3 ;
         SysStatusDef SysStatus = 4 ; // TRJXバッテリーなど状態UI表示
-
+        trjxmission.CameraControl CameraStatus = 5 ; // RM#3304
+        MissionCurrentDef MissionCurrent = 6 ; // 実行中のミッション状態
         BatteryStatusDef Battery = 10 ; // バッテリー詳細情報（オプション）
-
-        KeyValueTelemetryDef KeyValueTelemetry=1 ; // キーバリュータイプ（暫定API）
         HeartbeatDef heartbeat = 11 ;
+
+        KeyValueTelemetryDef KeyValueTelemetry=1 ; // キーバリュータイプ（暫定API）：廃止予定
     }
 }
 
 message PositionDef {
-    double Latitude = 1 ;
-    double Longitude =2 ;
+    double Latitude = 1 ; // 度
+    double Longitude =2 ; // 度
     float Altitude = 3 ; // m
     AltitudeAttrDef AltitudeAttr = 4 ;
     float Vx = 5 ; // m/s  (Latitude, positive north)
@@ -118,14 +132,12 @@ message SysStatusDef {
     float VoltageBattery = 2 ; // V (マイナス値で無効)
     float CurrentBattery = 3  ; // A (マイナス値で無効)
     int32 BatteryRemaining = 4 ; // %  (マイナス値で無効)
-    // string ErrorInfo = 5 ;
 }
 
-/*
-message BatterysDef { // BATTERY_STATUS ( #147 )
-    map<int32,BatteryStatusDef> Batterys = 1 ;
+message MissionCurrentDef {
+    int32 seq = 1 ; // 実行中ミッション。itemsArrayのインデックス値 RM#3303
 }
-*/
+
 
 message BatteryStatusDef{
 	// Battery ID
@@ -152,7 +164,7 @@ message BatteryStatusDef{
 
 message HeartbeatDef {
   FlightStateType FlightState = 1;
-  // DisplayModeDef DisplayMode = 2;
+  // TVCArm arm = 2 ; // RM#3302 FlightStateTypeで代える
 }
 
 enum FlightStateType {
@@ -210,6 +222,7 @@ message Avoidance { // Reroute不可の機体に対して通知
     // 空間ID利用？
 }
 
+// 廃止予定
 // キーバリュータイプテレメトリー
 message KeyValueTelemetryDef {
     oneof TelemetryElement {
