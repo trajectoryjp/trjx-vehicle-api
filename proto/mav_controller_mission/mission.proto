@@ -2,9 +2,7 @@ syntax = "proto3";
 
 package trjxmission;
 
-//option go_package = "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles_go/trjxmission";
 option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmission" ;
-//option go_package = "proto_go/trjxmission" ;
 
 // MissionItemのリスト
 message Mission {

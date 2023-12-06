@@ -3,15 +3,9 @@ syntax = "proto3";
 package trjxmavlink;
 
 option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
-//option go_package = "proto_go/trjxmavlink" ;
-//import "trjxcommon.proto";
 import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
-//import "proto/mav_controller_outside/trjxcommon.proto" ;
-//import "mission.proto"; 
 import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_mission/mission.proto" ;
-//import "proto/mav_controller_mission/mission.proto" ;
 
-// 当面TLS対象外
 // 最初にConnect()でトークンを得る。トークンに期限なし、Connect()により更新される。
 // ただしトークンは揮発性であり、サーバーの更新などにより初期化されることがある。トークンの認証がNGになった場合はConnectから再試行すること。
 // 各APIにアクセスするには、Connect()で得たトークンを以下に設定する

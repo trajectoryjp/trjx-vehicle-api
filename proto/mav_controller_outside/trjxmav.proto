@@ -2,15 +2,9 @@ syntax = "proto3";
 
 package trjxmavlink;
 
-//option go_package = "git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/trjxProtocolfiles_go/trjxmavlink" ;
 option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
-//option go_package = "proto_go/trjxmavlink" ;
-
-//import "trjxcommon.proto";
-//import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
 import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
 
-// 当面TLS対象外
 // 最初にLogin()でトークンを得る。機体IDとパスワードをhttpヘッダに設定する
 // トークンに期限なし、Connect()により更新される。
 // トークンは揮発性であり、サーバーの更新などにより初期化されることがある。トークンの認証がNGになった場合はConnectから再試行すること。
