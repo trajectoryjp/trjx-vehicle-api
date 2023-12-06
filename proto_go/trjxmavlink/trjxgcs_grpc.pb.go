@@ -24,16 +24,25 @@ const _ = grpc.SupportPackageIsVersion7
 type TrjxGcsServiceClient interface {
 	// バージョン情報取得。認証不要。
 	GetSeriviceAttribute(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SeriviceAttribute, error)
-	// GCSからTRJXへの接続要求。機体ごとに行う。
+	// aircraftとpasswordで認証してtokenを得る
+	// aircraftとpasswordはヘッダ情報に設定する
+	Login(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Token, error)
+	// TRJXユーザアカウントで認証してtokenを得る
 	Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*GCToken, error)
-	// 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
+	// 未実装。
+	// aircraft_idとtokenでアクセスする。
 	Communicate(ctx context.Context, opts ...grpc.CallOption) (TrjxGcsService_CommunicateClient, error)
-	// 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
-	Request(ctx context.Context, in *TrjxVehicleRequest, opts ...grpc.CallOption) (TrjxGcsService_RequestClient, error)
+	// 機体からTRJXへのリクエスト
+	// aircraft_idとtokenでアクセスする。
+	SimpleRequest(ctx context.Context, in *TrjxVehicleRequest, opts ...grpc.CallOption) (*Result, error)
 	// 応答はkeepalive。Connect()で得たaircraft_idとtokenでアクセスする。
 	// 1機体につき1ストリーム（機体ごとに本APIを呼ぶこと）
+	// aircraft_idとtokenでアクセスする。
 	Telemetry(ctx context.Context, opts ...grpc.CallOption) (TrjxGcsService_TelemetryClient, error)
-	// 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
+	// 機体に命令を送る。
+	// UASは本APIを発行しTRJXからのストリームで送られる命令を待ち受ける。
+	// 1機体につき1ストリーム（機体ごとに本APIを呼ぶこと）
+	// aircraft_idとtokenでアクセスする。
 	ReceiveCommand(ctx context.Context, opts ...grpc.CallOption) (TrjxGcsService_ReceiveCommandClient, error)
 }
 
@@ -48,6 +57,15 @@ func NewTrjxGcsServiceClient(cc grpc.ClientConnInterface) TrjxGcsServiceClient {
 func (c *trjxGcsServiceClient) GetSeriviceAttribute(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SeriviceAttribute, error) {
 	out := new(SeriviceAttribute)
 	err := c.cc.Invoke(ctx, "/trjxmavlink.TrjxGcsService/GetSeriviceAttribute", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *trjxGcsServiceClient) Login(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Token, error) {
+	out := new(Token)
+	err := c.cc.Invoke(ctx, "/trjxmavlink.TrjxGcsService/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,40 +112,17 @@ func (x *trjxGcsServiceCommunicateClient) Recv() (*TrjxVehicleMessage, error) {
 	return m, nil
 }
 
-func (c *trjxGcsServiceClient) Request(ctx context.Context, in *TrjxVehicleRequest, opts ...grpc.CallOption) (TrjxGcsService_RequestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TrjxGcsService_ServiceDesc.Streams[1], "/trjxmavlink.TrjxGcsService/Request", opts...)
+func (c *trjxGcsServiceClient) SimpleRequest(ctx context.Context, in *TrjxVehicleRequest, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := c.cc.Invoke(ctx, "/trjxmavlink.TrjxGcsService/SimpleRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &trjxGcsServiceRequestClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type TrjxGcsService_RequestClient interface {
-	Recv() (*TrjxVehicleResponse, error)
-	grpc.ClientStream
-}
-
-type trjxGcsServiceRequestClient struct {
-	grpc.ClientStream
-}
-
-func (x *trjxGcsServiceRequestClient) Recv() (*TrjxVehicleResponse, error) {
-	m := new(TrjxVehicleResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 func (c *trjxGcsServiceClient) Telemetry(ctx context.Context, opts ...grpc.CallOption) (TrjxGcsService_TelemetryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TrjxGcsService_ServiceDesc.Streams[2], "/trjxmavlink.TrjxGcsService/Telemetry", opts...)
+	stream, err := c.cc.NewStream(ctx, &TrjxGcsService_ServiceDesc.Streams[1], "/trjxmavlink.TrjxGcsService/Telemetry", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +153,7 @@ func (x *trjxGcsServiceTelemetryClient) Recv() (*Empty, error) {
 }
 
 func (c *trjxGcsServiceClient) ReceiveCommand(ctx context.Context, opts ...grpc.CallOption) (TrjxGcsService_ReceiveCommandClient, error) {
-	stream, err := c.cc.NewStream(ctx, &TrjxGcsService_ServiceDesc.Streams[3], "/trjxmavlink.TrjxGcsService/ReceiveCommand", opts...)
+	stream, err := c.cc.NewStream(ctx, &TrjxGcsService_ServiceDesc.Streams[2], "/trjxmavlink.TrjxGcsService/ReceiveCommand", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -194,16 +189,25 @@ func (x *trjxGcsServiceReceiveCommandClient) Recv() (*TrjxVehicleCommand, error)
 type TrjxGcsServiceServer interface {
 	// バージョン情報取得。認証不要。
 	GetSeriviceAttribute(context.Context, *Empty) (*SeriviceAttribute, error)
-	// GCSからTRJXへの接続要求。機体ごとに行う。
+	// aircraftとpasswordで認証してtokenを得る
+	// aircraftとpasswordはヘッダ情報に設定する
+	Login(context.Context, *Empty) (*Token, error)
+	// TRJXユーザアカウントで認証してtokenを得る
 	Connect(context.Context, *ConnectRequest) (*GCToken, error)
-	// 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
+	// 未実装。
+	// aircraft_idとtokenでアクセスする。
 	Communicate(TrjxGcsService_CommunicateServer) error
-	// 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
-	Request(*TrjxVehicleRequest, TrjxGcsService_RequestServer) error
+	// 機体からTRJXへのリクエスト
+	// aircraft_idとtokenでアクセスする。
+	SimpleRequest(context.Context, *TrjxVehicleRequest) (*Result, error)
 	// 応答はkeepalive。Connect()で得たaircraft_idとtokenでアクセスする。
 	// 1機体につき1ストリーム（機体ごとに本APIを呼ぶこと）
+	// aircraft_idとtokenでアクセスする。
 	Telemetry(TrjxGcsService_TelemetryServer) error
-	// 未実装。Connect()で得たaircraft_idとtokenでアクセスする。
+	// 機体に命令を送る。
+	// UASは本APIを発行しTRJXからのストリームで送られる命令を待ち受ける。
+	// 1機体につき1ストリーム（機体ごとに本APIを呼ぶこと）
+	// aircraft_idとtokenでアクセスする。
 	ReceiveCommand(TrjxGcsService_ReceiveCommandServer) error
 	mustEmbedUnimplementedTrjxGcsServiceServer()
 }
@@ -215,14 +219,17 @@ type UnimplementedTrjxGcsServiceServer struct {
 func (UnimplementedTrjxGcsServiceServer) GetSeriviceAttribute(context.Context, *Empty) (*SeriviceAttribute, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSeriviceAttribute not implemented")
 }
+func (UnimplementedTrjxGcsServiceServer) Login(context.Context, *Empty) (*Token, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
 func (UnimplementedTrjxGcsServiceServer) Connect(context.Context, *ConnectRequest) (*GCToken, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Connect not implemented")
 }
 func (UnimplementedTrjxGcsServiceServer) Communicate(TrjxGcsService_CommunicateServer) error {
 	return status.Errorf(codes.Unimplemented, "method Communicate not implemented")
 }
-func (UnimplementedTrjxGcsServiceServer) Request(*TrjxVehicleRequest, TrjxGcsService_RequestServer) error {
-	return status.Errorf(codes.Unimplemented, "method Request not implemented")
+func (UnimplementedTrjxGcsServiceServer) SimpleRequest(context.Context, *TrjxVehicleRequest) (*Result, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SimpleRequest not implemented")
 }
 func (UnimplementedTrjxGcsServiceServer) Telemetry(TrjxGcsService_TelemetryServer) error {
 	return status.Errorf(codes.Unimplemented, "method Telemetry not implemented")
@@ -257,6 +264,24 @@ func _TrjxGcsService_GetSeriviceAttribute_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TrjxGcsServiceServer).GetSeriviceAttribute(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TrjxGcsService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TrjxGcsServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trjxmavlink.TrjxGcsService/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrjxGcsServiceServer).Login(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -305,25 +330,22 @@ func (x *trjxGcsServiceCommunicateServer) Recv() (*TrjxVehicleMessage, error) {
 	return m, nil
 }
 
-func _TrjxGcsService_Request_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(TrjxVehicleRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _TrjxGcsService_SimpleRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TrjxVehicleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(TrjxGcsServiceServer).Request(m, &trjxGcsServiceRequestServer{stream})
-}
-
-type TrjxGcsService_RequestServer interface {
-	Send(*TrjxVehicleResponse) error
-	grpc.ServerStream
-}
-
-type trjxGcsServiceRequestServer struct {
-	grpc.ServerStream
-}
-
-func (x *trjxGcsServiceRequestServer) Send(m *TrjxVehicleResponse) error {
-	return x.ServerStream.SendMsg(m)
+	if interceptor == nil {
+		return srv.(TrjxGcsServiceServer).SimpleRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/trjxmavlink.TrjxGcsService/SimpleRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TrjxGcsServiceServer).SimpleRequest(ctx, req.(*TrjxVehicleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _TrjxGcsService_Telemetry_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -390,8 +412,16 @@ var TrjxGcsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TrjxGcsService_GetSeriviceAttribute_Handler,
 		},
 		{
+			MethodName: "Login",
+			Handler:    _TrjxGcsService_Login_Handler,
+		},
+		{
 			MethodName: "Connect",
 			Handler:    _TrjxGcsService_Connect_Handler,
+		},
+		{
+			MethodName: "SimpleRequest",
+			Handler:    _TrjxGcsService_SimpleRequest_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -400,11 +430,6 @@ var TrjxGcsService_ServiceDesc = grpc.ServiceDesc{
 			Handler:       _TrjxGcsService_Communicate_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
-		},
-		{
-			StreamName:    "Request",
-			Handler:       _TrjxGcsService_Request_Handler,
-			ServerStreams: true,
 		},
 		{
 			StreamName:    "Telemetry",

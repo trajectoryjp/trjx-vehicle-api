@@ -20,6 +20,61 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Token_Code int32
+
+const (
+	Token_Complete      Token_Code = 0 // ログイン成功
+	Token_Accepted      Token_Code = 1 // ユーザによって承認。パスワード発行。
+	Token_Deny          Token_Code = 2 // ユーザによって拒否。
+	Token_Invalid       Token_Code = 3 // パスワードが無効
+	Token_InternalError Token_Code = 10
+)
+
+// Enum value maps for Token_Code.
+var (
+	Token_Code_name = map[int32]string{
+		0:  "Complete",
+		1:  "Accepted",
+		2:  "Deny",
+		3:  "Invalid",
+		10: "InternalError",
+	}
+	Token_Code_value = map[string]int32{
+		"Complete":      0,
+		"Accepted":      1,
+		"Deny":          2,
+		"Invalid":       3,
+		"InternalError": 10,
+	}
+)
+
+func (x Token_Code) Enum() *Token_Code {
+	p := new(Token_Code)
+	*p = x
+	return p
+}
+
+func (x Token_Code) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Token_Code) Descriptor() protoreflect.EnumDescriptor {
+	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_enumTypes[0].Descriptor()
+}
+
+func (Token_Code) Type() protoreflect.EnumType {
+	return &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_enumTypes[0]
+}
+
+func (x Token_Code) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Token_Code.Descriptor instead.
+func (Token_Code) EnumDescriptor() ([]byte, []int) {
+	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{3, 0}
+}
+
 type Result_CodeDef int32
 
 const (
@@ -53,11 +108,11 @@ func (x Result_CodeDef) String() string {
 }
 
 func (Result_CodeDef) Descriptor() protoreflect.EnumDescriptor {
-	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_enumTypes[0].Descriptor()
+	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_enumTypes[1].Descriptor()
 }
 
 func (Result_CodeDef) Type() protoreflect.EnumType {
-	return &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_enumTypes[0]
+	return &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_enumTypes[1]
 }
 
 func (x Result_CodeDef) Number() protoreflect.EnumNumber {
@@ -66,7 +121,7 @@ func (x Result_CodeDef) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Result_CodeDef.Descriptor instead.
 func (Result_CodeDef) EnumDescriptor() ([]byte, []int) {
-	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{3, 0}
+	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{4, 0}
 }
 
 type SystemVersion struct {
@@ -217,6 +272,69 @@ func (*Empty) Descriptor() ([]byte, []int) {
 	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{2}
 }
 
+type Token struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Result   Token_Code `protobuf:"varint,1,opt,name=Result,proto3,enum=trjxmavlink.Token_Code" json:"Result,omitempty"`
+	Password string     `protobuf:"bytes,2,opt,name=Password,proto3" json:"Password,omitempty"` // TRJXがペアリング状態である場合にはパスワードが発行される。
+	Token    string     `protobuf:"bytes,3,opt,name=Token,proto3" json:"Token,omitempty"`
+}
+
+func (x *Token) Reset() {
+	*x = Token{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Token) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Token) ProtoMessage() {}
+
+func (x *Token) ProtoReflect() protoreflect.Message {
+	mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Token.ProtoReflect.Descriptor instead.
+func (*Token) Descriptor() ([]byte, []int) {
+	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Token) GetResult() Token_Code {
+	if x != nil {
+		return x.Result
+	}
+	return Token_Complete
+}
+
+func (x *Token) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+func (x *Token) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
 type Result struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -229,7 +347,7 @@ type Result struct {
 func (x *Result) Reset() {
 	*x = Result{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[3]
+		mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -242,7 +360,7 @@ func (x *Result) String() string {
 func (*Result) ProtoMessage() {}
 
 func (x *Result) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[3]
+	mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -255,7 +373,7 @@ func (x *Result) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Result.ProtoReflect.Descriptor instead.
 func (*Result) Descriptor() ([]byte, []int) {
-	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{3}
+	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Result) GetCode() Result_CodeDef {
@@ -286,7 +404,7 @@ type AutopilotModelDef struct {
 func (x *AutopilotModelDef) Reset() {
 	*x = AutopilotModelDef{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[4]
+		mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -299,7 +417,7 @@ func (x *AutopilotModelDef) String() string {
 func (*AutopilotModelDef) ProtoMessage() {}
 
 func (x *AutopilotModelDef) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[4]
+	mi := &file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -312,7 +430,7 @@ func (x *AutopilotModelDef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AutopilotModelDef.ProtoReflect.Descriptor instead.
 func (*AutopilotModelDef) Descriptor() ([]byte, []int) {
-	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{4}
+	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescGZIP(), []int{5}
 }
 
 func (m *AutopilotModelDef) GetModel() isAutopilotModelDef_Model {
@@ -371,26 +489,38 @@ var file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_t
 	0x07, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
 	0x2e, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c, 0x69, 0x6e, 0x6b, 0x2e, 0x53, 0x79, 0x73,
 	0x74, 0x65, 0x6d, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x07, 0x56, 0x65, 0x72, 0x73,
-	0x69, 0x6f, 0x6e, 0x22, 0x07, 0x0a, 0x05, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x92, 0x01, 0x0a,
-	0x06, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x2f, 0x0a, 0x04, 0x43, 0x6f, 0x64, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c,
-	0x69, 0x6e, 0x6b, 0x2e, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x2e, 0x43, 0x6f, 0x64, 0x65, 0x44,
-	0x65, 0x66, 0x52, 0x04, 0x43, 0x6f, 0x64, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x22, 0x3f, 0x0a, 0x07, 0x43, 0x6f, 0x64, 0x65, 0x44, 0x65, 0x66, 0x12, 0x0c, 0x0a, 0x08, 0x43,
-	0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x10, 0x00, 0x12, 0x11, 0x0a, 0x0d, 0x49, 0x6e, 0x74,
-	0x65, 0x72, 0x6e, 0x61, 0x6c, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x10, 0x01, 0x12, 0x13, 0x0a, 0x0f,
-	0x4e, 0x6f, 0x45, 0x78, 0x69, 0x73, 0x74, 0x41, 0x69, 0x72, 0x63, 0x72, 0x61, 0x66, 0x74, 0x10,
-	0x02, 0x22, 0x50, 0x0a, 0x11, 0x41, 0x75, 0x74, 0x6f, 0x70, 0x69, 0x6c, 0x6f, 0x74, 0x4d, 0x6f,
-	0x64, 0x65, 0x6c, 0x44, 0x65, 0x66, 0x12, 0x14, 0x0a, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1c, 0x0a, 0x08,
-	0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x53, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00,
-	0x52, 0x08, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x53, 0x65, 0x74, 0x42, 0x07, 0x0a, 0x05, 0x4d, 0x6f,
-	0x64, 0x65, 0x6c, 0x42, 0x3f, 0x5a, 0x3d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
-	0x6d, 0x2f, 0x74, 0x72, 0x61, 0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x6a, 0x70, 0x2f, 0x74,
-	0x72, 0x6a, 0x78, 0x2d, 0x76, 0x65, 0x68, 0x69, 0x63, 0x6c, 0x65, 0x2d, 0x61, 0x70, 0x69, 0x2f,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x5f, 0x67, 0x6f, 0x2f, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76,
-	0x6c, 0x69, 0x6e, 0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6f, 0x6e, 0x22, 0x07, 0x0a, 0x05, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0xb8, 0x01, 0x0a,
+	0x05, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x2f, 0x0a, 0x06, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x17, 0x2e, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76,
+	0x6c, 0x69, 0x6e, 0x6b, 0x2e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x2e, 0x43, 0x6f, 0x64, 0x65, 0x52,
+	0x06, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x50, 0x61, 0x73, 0x73, 0x77,
+	0x6f, 0x72, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x50, 0x61, 0x73, 0x73, 0x77,
+	0x6f, 0x72, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x05, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x4c, 0x0a, 0x04, 0x43, 0x6f, 0x64,
+	0x65, 0x12, 0x0c, 0x0a, 0x08, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x10, 0x00, 0x12,
+	0x0c, 0x0a, 0x08, 0x41, 0x63, 0x63, 0x65, 0x70, 0x74, 0x65, 0x64, 0x10, 0x01, 0x12, 0x08, 0x0a,
+	0x04, 0x44, 0x65, 0x6e, 0x79, 0x10, 0x02, 0x12, 0x0b, 0x0a, 0x07, 0x49, 0x6e, 0x76, 0x61, 0x6c,
+	0x69, 0x64, 0x10, 0x03, 0x12, 0x11, 0x0a, 0x0d, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c,
+	0x45, 0x72, 0x72, 0x6f, 0x72, 0x10, 0x0a, 0x22, 0x92, 0x01, 0x0a, 0x06, 0x52, 0x65, 0x73, 0x75,
+	0x6c, 0x74, 0x12, 0x2f, 0x0a, 0x04, 0x43, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x1b, 0x2e, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c, 0x69, 0x6e, 0x6b, 0x2e, 0x52,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x2e, 0x43, 0x6f, 0x64, 0x65, 0x44, 0x65, 0x66, 0x52, 0x04, 0x43,
+	0x6f, 0x64, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x06, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x3f, 0x0a, 0x07, 0x43,
+	0x6f, 0x64, 0x65, 0x44, 0x65, 0x66, 0x12, 0x0c, 0x0a, 0x08, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65,
+	0x74, 0x65, 0x10, 0x00, 0x12, 0x11, 0x0a, 0x0d, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c,
+	0x45, 0x72, 0x72, 0x6f, 0x72, 0x10, 0x01, 0x12, 0x13, 0x0a, 0x0f, 0x4e, 0x6f, 0x45, 0x78, 0x69,
+	0x73, 0x74, 0x41, 0x69, 0x72, 0x63, 0x72, 0x61, 0x66, 0x74, 0x10, 0x02, 0x22, 0x50, 0x0a, 0x11,
+	0x41, 0x75, 0x74, 0x6f, 0x70, 0x69, 0x6c, 0x6f, 0x74, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x44, 0x65,
+	0x66, 0x12, 0x14, 0x0a, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x48,
+	0x00, 0x52, 0x04, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1c, 0x0a, 0x08, 0x4d, 0x6f, 0x64, 0x65, 0x6c,
+	0x53, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x48, 0x00, 0x52, 0x08, 0x4d, 0x6f, 0x64,
+	0x65, 0x6c, 0x53, 0x65, 0x74, 0x42, 0x07, 0x0a, 0x05, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x42, 0x3f,
+	0x5a, 0x3d, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x74, 0x72, 0x61,
+	0x6a, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x6a, 0x70, 0x2f, 0x74, 0x72, 0x6a, 0x78, 0x2d, 0x76,
+	0x65, 0x68, 0x69, 0x63, 0x6c, 0x65, 0x2d, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x5f, 0x67, 0x6f, 0x2f, 0x74, 0x72, 0x6a, 0x78, 0x6d, 0x61, 0x76, 0x6c, 0x69, 0x6e, 0x6b, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -405,24 +535,27 @@ func file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_
 	return file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDescData
 }
 
-var file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_goTypes = []interface{}{
-	(Result_CodeDef)(0),       // 0: trjxmavlink.Result.CodeDef
-	(*SystemVersion)(nil),     // 1: trjxmavlink.SystemVersion
-	(*SeriviceAttribute)(nil), // 2: trjxmavlink.SeriviceAttribute
-	(*Empty)(nil),             // 3: trjxmavlink.Empty
-	(*Result)(nil),            // 4: trjxmavlink.Result
-	(*AutopilotModelDef)(nil), // 5: trjxmavlink.AutopilotModelDef
+	(Token_Code)(0),           // 0: trjxmavlink.Token.Code
+	(Result_CodeDef)(0),       // 1: trjxmavlink.Result.CodeDef
+	(*SystemVersion)(nil),     // 2: trjxmavlink.SystemVersion
+	(*SeriviceAttribute)(nil), // 3: trjxmavlink.SeriviceAttribute
+	(*Empty)(nil),             // 4: trjxmavlink.Empty
+	(*Token)(nil),             // 5: trjxmavlink.Token
+	(*Result)(nil),            // 6: trjxmavlink.Result
+	(*AutopilotModelDef)(nil), // 7: trjxmavlink.AutopilotModelDef
 }
 var file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_depIdxs = []int32{
-	1, // 0: trjxmavlink.SeriviceAttribute.Version:type_name -> trjxmavlink.SystemVersion
-	0, // 1: trjxmavlink.Result.Code:type_name -> trjxmavlink.Result.CodeDef
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 0: trjxmavlink.SeriviceAttribute.Version:type_name -> trjxmavlink.SystemVersion
+	0, // 1: trjxmavlink.Token.Result:type_name -> trjxmavlink.Token.Code
+	1, // 2: trjxmavlink.Result.Code:type_name -> trjxmavlink.Result.CodeDef
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() {
@@ -470,7 +603,7 @@ func file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_
 			}
 		}
 		file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Result); i {
+			switch v := v.(*Token); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -482,6 +615,18 @@ func file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_
 			}
 		}
 		file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Result); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AutopilotModelDef); i {
 			case 0:
 				return &v.state
@@ -494,7 +639,7 @@ func file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_
 			}
 		}
 	}
-	file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[4].OneofWrappers = []interface{}{
+	file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_msgTypes[5].OneofWrappers = []interface{}{
 		(*AutopilotModelDef_Name)(nil),
 		(*AutopilotModelDef_ModelSet)(nil),
 	}
@@ -503,8 +648,8 @@ func file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_github_com_trajectoryjp_trjx_vehicle_api_proto_mav_controller_outside_trjxcommon_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   5,
+			NumEnums:      2,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -844,7 +844,7 @@ type CameraControl struct {
 	unknownFields protoimpl.UnknownFields
 
 	Pitch     *float32                      `protobuf:"fixed32,1,opt,name=pitch,proto3,oneof" json:"pitch,omitempty"` // ジンバル角度。水平0度、真上-90度、真下90度
-	Yaw       *float32                      `protobuf:"fixed32,2,opt,name=yaw,proto3,oneof" json:"yaw,omitempty"`     // 当面対象外
+	Yaw       *float32                      `protobuf:"fixed32,2,opt,name=yaw,proto3,oneof" json:"yaw,omitempty"`     // 水平方向角度(-180°〜180°) 機首方向0°。右方向が+
 	Picture   *CameraControl_PictureControl `protobuf:"varint,3,opt,name=picture,proto3,enum=trjxmission.CameraControl_PictureControl,oneof" json:"picture,omitempty"`
 	Movie     *CameraControl_MovieControl   `protobuf:"varint,4,opt,name=movie,proto3,enum=trjxmission.CameraControl_MovieControl,oneof" json:"movie,omitempty"`
 	Zoom      *float32                      `protobuf:"fixed32,5,opt,name=zoom,proto3,oneof" json:"zoom,omitempty"`                                                       // 拡大率
