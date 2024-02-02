@@ -22,7 +22,7 @@ service TrjxGcsService {
 
     // aircraftとpasswordで認証してtokenを得る
     // aircraftとpasswordはヘッダ情報に設定する
-    rpc Login(Empty) returns (Token){} 
+    rpc Login(AircraftAttribute) returns (Token){} 
 
     // TRJXユーザアカウントで認証してtokenを得る
     rpc Connect(ConnectRequest) returns (GCToken){} 
@@ -47,6 +47,8 @@ service TrjxGcsService {
     rpc ReceiveCommand(stream TrjxVehicleReceiveCommandHandling) returns(stream TrjxVehicleCommand){}  
 }
 
+
+
 message ConnectRequest {
     string AircraftID = 1 ; // 自組織の機体に限る
     oneof Identification {
@@ -54,6 +56,8 @@ message ConnectRequest {
         string OrganizationID = 3 ; // TRJX組織ID。未実装
     }
     string Password = 8 ; // TRJXアカウントパスワード
+
+    AircraftAttribute attribute = 10 ;
 }
 
 message GCToken{
@@ -68,14 +72,14 @@ message GCToken{
 }
 
 message TrjxVehicleMessage {
-    oneof MessageType {
-        Empty Heartbeat = 1 ;
-    }
+    //oneof MessageType {
+    //   Empty Heartbeat = 1 ;
+    //}
 }
 
 message TrjxVehicleRequest { 
     oneof Command {
-        string assinged_mission_id = 1 ; //  機体に割り付けたミッションのID
+        string assinged_mission_id = 1 ; //  機体に割り付けたミッションのID。TRJXによってアサインされたミッションは破棄され本ミッションでアサインされた状態になる。
     }
 }
 
@@ -166,7 +170,7 @@ message HeartbeatDef {
 enum FlightStateType {
   Unknown  = 0;
   Stopped  = 1; // disarming
-  OnGround = 2; // arming
+  OnGround = 2; // arm/disarm状態は変わらない
   InAir    = 3; // arming
 }
 
@@ -266,3 +270,49 @@ message TVCGoto{
     trjxmission.Altitude Altitude = 3 ;
 }
 
+
+message AircraftAttribute {
+   
+    InvalidTelemAbility invalid_ability_telem = 10 ; 
+    ControlAbility control_ability = 20 ;
+    CameraAbility  camera_ability  = 12 ;
+
+    message ControlAbility { // see TrjxVehicleCommand
+        bool collision = 2 ;
+        bool avoidance =3 ;
+        bool assign_mission = 4 ;
+        bool flight_assign_mission = 5 ;
+        bool exec_mission = 6 ;
+        bool pause = 7 ;
+        bool land = 9 ;
+        bool arm = 10 ;
+        bool takeoff = 11 ;
+        bool goto = 12 ; 
+    }
+
+    message InvalidTelemAbility { // 送信しないテレメトリーはtrue
+        bool position = 1 ;
+        bool AltitudeElementttitude = 2 ;
+        bool mission_current = 3 ;
+        bool battery = 5 ;
+        bool sys_status = 6 ;
+        bool autopilot_mode = 8 ;
+
+        bool camera_status = 20 ;
+        bool heartbeat = 21 ;
+
+        reserved 4,7 ;
+    }
+
+    message CameraAbility{ // 操作可能なカメラ操作。操作可能ならtrue
+        bool image_mode = 1 ; // 可視光
+        bool ray_mode = 2 ; // 赤外線
+        bool shoot = 3 ; // 静止画撮影
+        bool movie = 4 ; // 動画撮影
+        bool zoom = 5 ; // ズーム操作
+        bool gimbal_pitch = 6 ; // カメラピッチ
+        bool gimbal_yaw = 7 ; // カメラヨー
+
+        reserved 8,9 ;
+    }
+}

@@ -26,7 +26,7 @@ type TrjxGcsServiceClient interface {
 	GetSeriviceAttribute(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SeriviceAttribute, error)
 	// aircraftとpasswordで認証してtokenを得る
 	// aircraftとpasswordはヘッダ情報に設定する
-	Login(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Token, error)
+	Login(ctx context.Context, in *AircraftAttribute, opts ...grpc.CallOption) (*Token, error)
 	// TRJXユーザアカウントで認証してtokenを得る
 	Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*GCToken, error)
 	// 未実装。
@@ -63,7 +63,7 @@ func (c *trjxGcsServiceClient) GetSeriviceAttribute(ctx context.Context, in *Emp
 	return out, nil
 }
 
-func (c *trjxGcsServiceClient) Login(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Token, error) {
+func (c *trjxGcsServiceClient) Login(ctx context.Context, in *AircraftAttribute, opts ...grpc.CallOption) (*Token, error) {
 	out := new(Token)
 	err := c.cc.Invoke(ctx, "/trjxmavlink.TrjxGcsService/Login", in, out, opts...)
 	if err != nil {
@@ -191,7 +191,7 @@ type TrjxGcsServiceServer interface {
 	GetSeriviceAttribute(context.Context, *Empty) (*SeriviceAttribute, error)
 	// aircraftとpasswordで認証してtokenを得る
 	// aircraftとpasswordはヘッダ情報に設定する
-	Login(context.Context, *Empty) (*Token, error)
+	Login(context.Context, *AircraftAttribute) (*Token, error)
 	// TRJXユーザアカウントで認証してtokenを得る
 	Connect(context.Context, *ConnectRequest) (*GCToken, error)
 	// 未実装。
@@ -219,7 +219,7 @@ type UnimplementedTrjxGcsServiceServer struct {
 func (UnimplementedTrjxGcsServiceServer) GetSeriviceAttribute(context.Context, *Empty) (*SeriviceAttribute, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSeriviceAttribute not implemented")
 }
-func (UnimplementedTrjxGcsServiceServer) Login(context.Context, *Empty) (*Token, error) {
+func (UnimplementedTrjxGcsServiceServer) Login(context.Context, *AircraftAttribute) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedTrjxGcsServiceServer) Connect(context.Context, *ConnectRequest) (*GCToken, error) {
@@ -269,7 +269,7 @@ func _TrjxGcsService_GetSeriviceAttribute_Handler(srv interface{}, ctx context.C
 }
 
 func _TrjxGcsService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(AircraftAttribute)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -281,7 +281,7 @@ func _TrjxGcsService_Login_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/trjxmavlink.TrjxGcsService/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrjxGcsServiceServer).Login(ctx, req.(*Empty))
+		return srv.(TrjxGcsServiceServer).Login(ctx, req.(*AircraftAttribute))
 	}
 	return interceptor(ctx, in, info, handler)
 }
