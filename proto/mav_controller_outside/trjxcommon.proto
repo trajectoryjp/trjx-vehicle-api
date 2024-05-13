@@ -37,6 +37,12 @@ message Result {
         Complete = 0 ;
         InternalError = 1 ;
         NoExistAircraft = 2 ;
+
+        /* BE APIで提供 spec226
+        // 離陸・着陸申請
+        APPROVED = 3 ; // 許可
+        UNABLE = 4 ; // 非許可
+        */
     }
 }
 
