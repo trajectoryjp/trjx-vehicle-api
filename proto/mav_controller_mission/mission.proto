@@ -122,3 +122,4 @@ message CameraControl {
         INFRARED = 1 ; // 赤外線映像
     }
 }
+

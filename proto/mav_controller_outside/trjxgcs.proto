@@ -79,7 +79,17 @@ message TrjxVehicleMessage {
 
 message TrjxVehicleRequest { 
     oneof Command {
-        string assinged_mission_id = 1 ; //  機体に割り付けたミッションのID。TRJXによってアサインされたミッションは破棄され本ミッションでアサインされた状態になる。
+        //  機体に割り付けたミッションのID（DBReadのID）。TRJXによってアサインされたミッションは破棄され本ミッションでアサインされた状態になる。
+        string assinged_mission_id = 1 ; // 廃止
+        // ApplyForTakeoff apply_for_takeoff = 2 ; BE APIで提供（spec226）
+        // ApplyForLanding apply_for_landing = 3 ; BE APIで提供（spec226）
+    }
+
+    message ApplyForTakeoff{
+        string mission_id = 1 ;
+    }
+    message ApplyForLanding{
+        string mission_id = 1 ;
     }
 }
 
@@ -135,7 +145,8 @@ message SysStatusDef {
 }
 
 message MissionCurrentDef {
-    int32 seq = 1 ; // 実行中ミッション。itemsArrayのインデックス値 RM#3303
+    int32 seq = 1 ; // 実行中ミッション。itemsArrayのインデックス値
+    optional string mission_id = 2 ; // パイロットモードのみ指定可。リモートモードでは無効。RM#3302
 }
 
 
@@ -200,7 +211,7 @@ message TrjxVehicleCommand {
         trjxmission.Mission SetMissionInFlight= 5 ; 
         TVCExecMission ExecMission = 6 ;
         TVCPause Pause = 7 ;
-        TVCLand Land = 9 ; // Land/RTL中はResult=Continue,着陸完了でesult=Complete
+        TVCLand Land = 9 ; // Land/RTL中はResult=Continue,着陸完了でresult=Complete
         TVCArm Arm = 10 ;
         TVCTakeoff Takeoff = 11 ;
         TVCGoto Goto = 12 ;
@@ -217,10 +228,12 @@ message Collision {
     float SpeedZ = 7 ;
 }
 
+
 message Avoidance { // Reroute不可の機体に対して通知
     // 検討中
     // 空間ID利用？
 }
+
 
 // 廃止予定
 // キーバリュータイプテレメトリー
