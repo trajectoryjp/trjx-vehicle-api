@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package trjxmavlink;
+
+option go_package = "github.com/trajectoryjp/trjx-vehicle-api/proto_go/trjxmavlink" ;
+
+import "github.com/trajectoryjp/trjx-vehicle-api/proto/mav_controller_outside/trjxcommon.proto" ;
+import "google/protobuf/empty.proto";
+
+service TrjxQualityMeasurementService {
+    // バージョン情報取得。認証不要。
+    rpc GetSeriviceAttribute(google.protobuf.Empty) returns (SeriviceAttribute) ;
+
+    // aircraftとpasswordで認証しトークンを得る
+    //
+    // ヘッダパラメータに次の項目を設定する
+    // aircraft：機体IDの文字列。例 "168"
+    // passwowrd：サーバーから払い出されたパスワード（TrjxMavlinkServiceのLoginと共通）
+    //   サーバーがペアリングモードであれば、レスポンスでパスワードが払い出される。一度払い出されるとペアリングモードは解除される。
+    // tokenはすでに払い出されている値を返す。
+    // TrjxMavlinkServiceのLoginが発行されるとtokenは変わる
+    rpc QualityMeasurementLogin(google.protobuf.Empty) returns (QualityMeasurementLoginResponse) ;
+
+    // 制御指示
+    // ヘッダパラメータに次の項目を設定する
+    // aircraft：機体IDの文字列。例 "168"
+    // token：QualityMeasurementLogin() APIで払い出されたトークン
+    rpc GetQualityMeasurementCommand(stream GetQualityMeasurementCommandRequest) returns (stream QualityMeasurementCommand);
+}
+
+message QualityMeasurementLoginResponse {
+    Token token = 1 ;
+    LatencyServer latency = 2 ; 
+    optional ThroughputServer throuput =3 ;
+
+    message LatencyServer {
+        string ping_server_address = 3 ; // 遅延測定pingサーバーアドレス。111.222.333.444
+    }
+    message ThroughputServer {
+        string user_id = 1 ;
+        string password = 2 ;
+        string ftp_server_address = 3 ; // スループット測定FTPサーバーアドレス。111.222.333.444
+    }
+    
+}
+
+message GetQualityMeasurementCommandRequest {
+    // keepalive（10秒周期程度で送る）
+    // Commandを受けたら応答として返す（10秒以内に返さないとユーザーにはエラーとして見える）
+    int64 local_time = 1 ; // ローカル時刻。UNIX time（秒）
+    Status latency_status = 2 ; // 測定状態
+    Status throughput_status = 3 ; // 測定状態
+
+    enum Status {
+        STATUS_UNSPECIFIED = 0;
+        STOP = 1 ; // 停止状態（Start不可）
+        IDLE = 2 ; // Start待ち
+        RUNNING = 3 ; // 測定中
+        HOLD = 4 ; // アップロード待ち
+        UPLOADING = 5 ; // アップロード中（アップロード終了後はIDLEに遷移）
+    }
+}
+
+message QualityMeasurementCommand{
+    oneof Instruction {
+        Start start_measurement = 1 ;
+        Stop stop_measurement = 2 ;
+        Upload upload_data = 3 ;
+        SyncTime sync_time = 4 ; // 5秒以上のずれがある場合に送られる
+    }
+
+    message Start {
+        Latency latency = 1 ;
+        optional Throughput throughput = 2 ; // Loginでthrouputが指定されていなければ指定されない。
+    }
+
+    message Stop { // コネクションが切れてもStopを送らない限り測定は停止しないこと
+       // 検討中
+    }
+
+    message Latency {
+        int32 interval = 1 ; // ping送信間隔（秒）
+     }
+
+     message Throughput {
+        int32 interval = 1 ; // ftp送信間隔（秒）
+        int32 size = 2 ; // 送信ファイルサイズ（kB）
+     }
+
+    message Upload { // uploadファイル名は別途定める
+        string ftp_server_address = 1 ; // 測定ファイル送信先アドレス
+        string upload_path = 2 ; // アップロードファイルパス
+        string user_id = 3 ;
+        string password = 4 ;
+    }
+
+    message SyncTime {
+        int64 client_local_time = 1 ; // GetCommandRequestのkeepalive
+        int64 server_local_time = 2 ; // client_local_timeを受けたサーバーの時刻
+    }
+}
