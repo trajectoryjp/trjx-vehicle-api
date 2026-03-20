@@ -50,6 +50,7 @@ message GetQualityMeasurementCommandRequest {
     int64 local_time = 1 ; // ローカル時刻。UNIX time（秒）
     Status latency_status = 2 ; // 測定状態
     Status throughput_status = 3 ; // 測定状態
+    Status gps_status = 4 ; // GPS受信状態
 
     enum Status {
         STATUS_UNSPECIFIED = 0;
@@ -58,6 +59,9 @@ message GetQualityMeasurementCommandRequest {
         RUNNING = 3 ; // 測定中
         HOLD = 4 ; // アップロード待ち
         UPLOADING = 5 ; // アップロード中（アップロード終了後はIDLEに遷移）
+        UNRECEIVE = 6; // GPS測位中
+        RECEIVE = 7; // GPS測位完了
+        SEND = 8; // GPS送信中
     }
 }
 
